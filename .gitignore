@@ -1,0 +1,52 @@
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 依赖目录
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+
+# 日志文件
+*.log
+logs/
+
+# 临时文件
+tmp/
+temp/
+.tmp/
+
+# 敏感信息
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+config/secrets/
+
+# 构建输出
+dist/
+build/
+out/
+
+# 备份文件
+*.bak
+*.backup
+backup/
+
+# 压缩文件
+*.zip
+*.tar.gz
+*.rar
+
+# 个人配置
+config/local.json
+user-config.json
