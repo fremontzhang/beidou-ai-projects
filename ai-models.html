@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beidou AI 模型接入展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .filters {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .filter-group select, .filter-group input {
+            padding: 10px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .filter-group select:focus, .filter-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-box input {
+            width: 100%;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2rem;
+            padding: 40px;
+        }
+
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .model-section {
+            background: white;
+            margin-bottom: 25px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 25px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .model-count {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+            padding: 25px;
+        }
+
+        .model-card {
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+            background: #fafbfc;
+        }
+
+        .model-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .model-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .model-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .model-provider {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .model-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .model-specs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+        }
+
+        .spec-label {
+            color: #888;
+            font-weight: 500;
+        }
+
+        .spec-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .model-pricing {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .pricing-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            font-size: 0.8rem;
+        }
+
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .price-label {
+            color: #666;
+        }
+
+        .price-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .free-price {
+            color: #28a745;
+        }
+
+        .model-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: #e9ecef;
+            color: #495057;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .tag.recommended {
+            background: #28a745;
+            color: white;
+        }
+
+        .tag.new {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        @media (max-width: 768px) {
+            .models-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .refresh-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .refresh-btn:hover {
+            background: #218838;
+        }
+
+        .refresh-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Beidou AI 模型接入展示</h1>
+            <p>探索所有可用的 AI 模型，按场景分类，详细信息一目了然</p>
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="搜索模型名称或描述...">
+                </div>
+                <select id="categoryFilter">
+                    <option value="">所有分类</option>
+                    <option value="coding">编程开发</option>
+                    <option value="reasoning">推理思考</option>
+                    <option value="multimodal">多模态</option>
+                    <option value="chat">对话聊天</option>
+                    <option value="analysis">数据分析</option>
+                    <option value="search">搜索增强</option>
+                    <option value="free">免费模型</option>
+                </select>
+                <select id="sortBy">
+                    <option value="name">按名称排序</option>
+                    <option value="price">按价格排序</option>
+                    <option value="context">按上下文长度排序</option>
+                </select>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <button class="refresh-btn" onclick="loadModels()">🔄 刷新模型数据</button>
+        </div>
+
+        <div id="loading" class="loading">
+            <div>⏳ 正在加载模型数据...</div>
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div id="stats" class="stats" style="display: none;"></div>
+
+        <div id="modelsContainer"></div>
+    </div>
+
+    <div id="modelModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = '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';
+        let allModels = [];
+        let filteredModels = [];
+
+        // 模型分类函数
+        function categorizeModel(model) {
+            const categories = [];
+            const name = model.name.toLowerCase();
+            const description = model.description.toLowerCase();
+
+            // 免费模型
+            const promptPrice = parseFloat(model.pricing?.prompt || '0');
+            const completionPrice = parseFloat(model.pricing?.completion || '0');
+            if (promptPrice === 0 && completionPrice === 0) {
+                categories.push('free');
+            }
+
+            // 编程开发
+            if (name.includes('codex') || name.includes('coder') || name.includes('code') ||
+                description.includes('coding') || description.includes('software engineering') ||
+                description.includes('code generation') || description.includes('programming')) {
+                categories.push('coding');
+            }
+
+            // 推理思考
+            if (name.includes('think') || name.includes('reasoning') || name.includes('o1') ||
+                description.includes('reasoning') || description.includes('thinking') ||
+                description.includes('step-by-step') || model.supported_parameters?.includes('reasoning')) {
+                categories.push('reasoning');
+            }
+
+            // 多模态
+            if (model.architecture?.input_modalities?.includes('image') ||
+                model.architecture?.input_modalities?.includes('audio') ||
+                model.architecture?.input_modalities?.includes('video') ||
+                name.includes('vision') || name.includes('image') || name.includes('multimodal')) {
+                categories.push('multimodal');
+            }
+
+            // 对话聊天
+            if (name.includes('chat') || name.includes('conversation') || name.includes('dialog') ||
+                description.includes('chat') || description.includes('conversation') ||
+                description.includes('interactive')) {
+                categories.push('chat');
+            }
+
+            // 数据分析
+            if (description.includes('analysis') || description.includes('data') ||
+                description.includes('mathematics') || description.includes('analytics')) {
+                categories.push('analysis');
+            }
+
+            // 搜索增强
+            if (name.includes('search') || description.includes('search') ||
+                description.includes('web') || model.supported_parameters?.includes('web_search_options')) {
+                categories.push('search');
+            }
+
+            return categories.length > 0 ? categories : ['general'];
+        }
+
+        // 获取模型厂商
+        function getProvider(modelId) {
+            if (modelId.startsWith('openai/')) return 'OpenAI';
+            if (modelId.startsWith('anthropic/')) return 'Anthropic';
+            if (modelId.startsWith('google/')) return 'Google';
+            if (modelId.startsWith('mistralai/')) return 'Mistral AI';
+            if (modelId.startsWith('meta-llama/')) return 'Meta';
+            if (modelId.startsWith('cohere/')) return 'Cohere';
+            if (modelId.startsWith('amazon/')) return 'Amazon';
+            if (modelId.startsWith('nvidia/')) return 'NVIDIA';
+            if (modelId.startsWith('ibm/')) return 'IBM';
+            if (modelId.startsWith('perplexity/')) return 'Perplexity';
+            if (modelId.startsWith('moonshotai/')) return 'Moonshot AI';
+            if (modelId.startsWith('minimax/')) return 'MiniMax';
+            if (modelId.startsWith('liquid/')) return 'Liquid AI';
+            if (modelId.startsWith('deepcogito/')) return 'Deep Cogito';
+            if (modelId.startsWith('kwaipilot/')) return 'KwaiPilot';
+            if (modelId.startsWith('openrouter/')) return 'OpenRouter';
+            return 'Other';
+        }
+
+        // 格式化价格
+        function formatPrice(price) {
+            const numPrice = parseFloat(price || '0');
+            if (numPrice === 0) return '免费';
+            return `$${numPrice.toFixed(6)}/1K tokens`;
+        }
+
+        // 格式化上下文长度
+        function formatContextLength(length) {
+            if (length >= 1000000) {
+                return `${(length / 1000000).toFixed(1)}M`;
+            }
+            if (length >= 1000) {
+                return `${(length / 1000).toFixed(0)}K`;
+            }
+            return length.toString();
+        }
+
+        // 加载模型数据
+        async function loadModels() {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const refreshBtn = document.querySelector('.refresh-btn');
+
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            refreshBtn.disabled = true;
+
+            try {
+                const response = await fetch('https://openrouter.ai/api/v1/models', {
+                    headers: {
+                        'HTTP-Referer': window.location.origin,
+                        'X-Title': 'OpenRouter Models Explorer'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                allModels = data.data.map(model => ({
+                    ...model,
+                    provider: getProvider(model.id),
+                    categories: categorizeModel(model)
+                }));
+
+                filteredModels = [...allModels];
+                displayModels();
+                updateStats();
+
+            } catch (err) {
+                error.textContent = `加载模型数据失败: ${err.message}`;
+                error.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+                refreshBtn.disabled = false;
+            }
+        }
+
+        // 更新统计信息
+        function updateStats() {
+            const statsContainer = document.getElementById('stats');
+            const totalModels = allModels.length;
+            const freeModels = allModels.filter(m =>
+                parseFloat(m.pricing?.prompt || '0') === 0 &&
+                parseFloat(m.pricing?.completion || '0') === 0
+            ).length;
+            const multimodalModels = allModels.filter(m =>
+                m.categories.includes('multimodal')
+            ).length;
+            const reasoningModels = allModels.filter(m =>
+                m.categories.includes('reasoning')
+            ).length;
+
+            statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${totalModels}</div>
+                    <div class="stat-label">总模型数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${freeModels}</div>
+                    <div class="stat-label">免费模型</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${multimodalModels}</div>
+                    <div class="stat-label">多模态模型</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${reasoningModels}</div>
+                    <div class="stat-label">推理模型</div>
+                </div>
+            `;
+            statsContainer.style.display = 'grid';
+        }
+
+        // 显示模型
+        function displayModels() {
+            const container = document.getElementById('modelsContainer');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const sortBy = document.getElementById('sortBy').value;
+
+            // 筛选模型
+            filteredModels = allModels.filter(model => {
+                const matchesSearch = model.name.toLowerCase().includes(searchTerm) ||
+                                     model.description.toLowerCase().includes(searchTerm);
+                const matchesCategory = !categoryFilter || model.categories.includes(categoryFilter);
+                return matchesSearch && matchesCategory;
+            });
+
+            // 排序模型
+            filteredModels.sort((a, b) => {
+                switch(sortBy) {
+                    case 'name':
+                        return a.name.localeCompare(b.name);
+                    case 'price':
+                        const aPrice = parseFloat(a.pricing?.prompt || '0');
+                        const bPrice = parseFloat(b.pricing?.prompt || '0');
+                        return aPrice - bPrice;
+                    case 'context':
+                        return (b.context_length || 0) - (a.context_length || 0);
+                    default:
+                        return 0;
+                }
+            });
+
+            // 按分类分组
+            const groupedModels = {};
+            filteredModels.forEach(model => {
+                const primaryCategory = model.categories[0] || 'general';
+                if (!groupedModels[primaryCategory]) {
+                    groupedModels[primaryCategory] = [];
+                }
+                groupedModels[primaryCategory].push(model);
+            });
+
+            // 显示模型
+            const categoryNames = {
+                'coding': '💻 编程开发',
+                'reasoning': '🧠 推理思考',
+                'multimodal': '🎨 多模态',
+                'chat': '💬 对话聊天',
+                'analysis': '📊 数据分析',
+                'search': '🔍 搜索增强',
+                'free': '🆓 免费模型',
+                'general': '⚙️ 通用模型'
+            };
+
+            container.innerHTML = '';
+
+            Object.entries(groupedModels).forEach(([category, models]) => {
+                const section = document.createElement('div');
+                section.className = 'model-section';
+
+                const categoryTitle = categoryNames[category] || `⚙️ ${category}`;
+
+                section.innerHTML = `
+                    <div class="section-header">
+                        <span>${categoryTitle}</span>
+                        <span class="model-count">${models.length} 个模型</span>
+                    </div>
+                    <div class="models-grid">
+                        ${models.map(model => createModelCard(model)).join('')}
+                    </div>
+                `;
+
+                container.appendChild(section);
+            });
+        }
+
+        // 创建模型卡片
+        function createModelCard(model) {
+            const isFree = parseFloat(model.pricing?.prompt || '0') === 0 &&
+                          parseFloat(model.pricing?.completion || '0') === 0;
+
+            const tags = [];
+            if (isFree) tags.push('<span class="tag free-price">🆓 免费</span>');
+            if (model.categories.includes('reasoning')) tags.push('<span class="tag recommended">🧠 推理</span>');
+            if (model.categories.includes('multimodal')) tags.push('<span class="tag new">🎨 多模态</span>');
+
+            return `
+                <div class="model-card" onclick="showModelDetails('${model.id}')">
+                    <div class="model-header">
+                        <div>
+                            <div class="model-name">${model.name}</div>
+                            <div style="color: #666; font-size: 0.85rem; margin-top: 5px;">
+                                ${model.provider}
+                            </div>
+                        </div>
+                        <div class="model-provider">${model.provider}</div>
+                    </div>
+
+                    <div class="model-description">
+                        ${model.description}
+                    </div>
+
+                    <div class="model-specs">
+                        <div class="spec-item">
+                            <span class="spec-label">上下文长度:</span>
+                            <span class="spec-value">${formatContextLength(model.context_length || 0)}</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">模态:</span>
+                            <span class="spec-value">${model.architecture?.modality || '文本'}</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">最大输出:</span>
+                            <span class="spec-value">${formatContextLength(model.top_provider?.max_completion_tokens || 0)}</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">审核:</span>
+                            <span class="spec-value">${model.top_provider?.is_moderated ? '是' : '否'}</span>
+                        </div>
+                    </div>
+
+                    <div class="model-pricing">
+                        <div class="pricing-title">💰 价格信息</div>
+                        <div class="pricing-grid">
+                            <div class="price-item">
+                                <span class="price-label">输入:</span>
+                                <span class="price-value ${isFree ? 'free-price' : ''}">${formatPrice(model.pricing?.prompt)}</span>
+                            </div>
+                            <div class="price-item">
+                                <span class="price-label">输出:</span>
+                                <span class="price-value ${isFree ? 'free-price' : ''}">${formatPrice(model.pricing?.completion)}</span>
+                            </div>
+                            <div class="price-item">
+                                <span class="price-label">请求:</span>
+                                <span class="price-value">${formatPrice(model.pricing?.request)}</span>
+                            </div>
+                            ${model.pricing?.image ? `
+                            <div class="price-item">
+                                <span class="price-label">图像:</span>
+                                <span class="price-value">${formatPrice(model.pricing?.image)}</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <div class="model-tags">
+                        ${tags.join('')}
+                        ${model.categories.map(cat => `<span class="tag">${cat}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // 显示模型详情
+        function showModelDetails(modelId) {
+            const model = allModels.find(m => m.id === modelId);
+            if (!model) return;
+
+            const modal = document.getElementById('modelModal');
+            const modalContent = document.getElementById('modalContent');
+
+            const isFree = parseFloat(model.pricing?.prompt || '0') === 0 &&
+                          parseFloat(model.pricing?.completion || '0') === 0;
+
+            modalContent.innerHTML = `
+                <h2>${model.name}</h2>
+                <p><strong>厂商:</strong> ${model.provider}</p>
+                <p><strong>模型ID:</strong> ${model.id}</p>
+
+                <h3>📋 描述</h3>
+                <p>${model.description}</p>
+
+                <h3>⚙️ 技术规格</h3>
+                <ul>
+                    <li><strong>上下文长度:</strong> ${formatContextLength(model.context_length || 0)}</li>
+                    <li><strong>最大输出:</strong> ${formatContextLength(model.top_provider?.max_completion_tokens || 0)}</li>
+                    <li><strong>模态:</strong> ${model.architecture?.modality || '文本'}</li>
+                    <li><strong>输入模态:</strong> ${model.architecture?.input_modalities?.join(', ') || '文本'}</li>
+                    <li><strong>输出模态:</strong> ${model.architecture?.output_modalities?.join(', ') || '文本'}</li>
+                    <li><strong>分词器:</strong> ${model.architecture?.tokenizer || '未知'}</li>
+                    <li><strong>内容审核:</strong> ${model.top_provider?.is_moderated ? '是' : '否'}</li>
+                </ul>
+
+                <h3>💰 价格详情</h3>
+                <ul>
+                    <li><strong>输入价格:</strong> ${formatPrice(model.pricing?.prompt)}</li>
+                    <li><strong>输出价格:</strong> ${formatPrice(model.pricing?.completion)}</li>
+                    <li><strong>请求费用:</strong> ${formatPrice(model.pricing?.request)}</li>
+                    ${model.pricing?.image ? `<li><strong>图像处理:</strong> ${formatPrice(model.pricing?.image)}</li>` : ''}
+                    ${model.pricing?.web_search ? `<li><strong>网络搜索:</strong> ${formatPrice(model.pricing?.web_search)}</li>` : ''}
+                    ${model.pricing?.internal_reasoning ? `<li><strong>内部推理:</strong> ${formatPrice(model.pricing?.internal_reasoning)}</li>` : ''}
+                    ${model.pricing?.input_cache_read ? `<li><strong>缓存读取:</strong> ${formatPrice(model.pricing?.input_cache_read)}</li>` : ''}
+                </ul>
+
+                <h3>🏷️ 分类标签</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;">
+                    ${model.categories.map(cat => `<span class="tag">${cat}</span>`).join('')}
+                </div>
+
+                <h3>🔧 支持的参数</h3>
+                <p>${model.supported_parameters?.join(', ') || '标准参数'}</p>
+
+                <h3>📊 使用限制</h3>
+                <p>${model.per_request_limits ? JSON.stringify(model.per_request_limits, null, 2) : '无特殊限制'}</p>
+            `;
+
+            modal.style.display = 'block';
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('modelModal').style.display = 'none';
+        }
+
+        // 事件监听器
+        document.getElementById('searchInput').addEventListener('input', displayModels);
+        document.getElementById('categoryFilter').addEventListener('change', displayModels);
+        document.getElementById('sortBy').addEventListener('change', displayModels);
+
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('modelModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // 页面加载时初始化
+        window.addEventListener('load', loadModels);
+    </script>
+</body>
+</html>

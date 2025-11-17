@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目导航 - Beidou AI Labs</title>
+    <meta name="description" content="Beidou AI Labs所有项目的导航页面，包含AI模型展示、部署方案、工具脚本等">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .nav-breadcrumb {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            color: white;
+            text-align: center;
+        }
+
+        .nav-breadcrumb a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .project-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .project-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .project-icon i {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .project-content {
+            padding: 25px;
+        }
+
+        .project-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .project-description {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .project-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #495057;
+            border: 1px solid #dee2e6;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .quick-actions {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .quick-actions h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .quick-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 12px 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .quick-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .quick-btn {
+                width: 200px;
+                text-align: center;
+            }
+        }
+
+        .badge {
+            background: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .badge.new {
+            background: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-flask"></i> Beidou AI Labs</h1>
+            <p>项目导航 - 探索所有实验项目</p>
+        </div>
+
+        <!-- Breadcrumb -->
+        <div class="nav-breadcrumb">
+            <a href="index.html">🏠 首页</a>
+            <span>📁 项目导航</span>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h3>🚀 快速访问</h3>
+            <div class="quick-buttons">
+                <a href="ai-models.html" class="quick-btn">
+                    <i class="fas fa-robot"></i> AI模型展示
+                </a>
+                <a href="https://github.com/fremontzhang/beidou-ai-projects" target="_blank" class="quick-btn">
+                    <i class="fab fa-github"></i> GitHub仓库
+                </a>
+                <a href="index.html" class="quick-btn">
+                    <i class="fas fa-home"></i> 返回首页
+                </a>
+            </div>
+        </div>
+
+        <!-- Projects Grid -->
+        <div class="projects-grid">
+            <!-- OpenRouter AI模型展示 -->
+            <div class="project-card">
+                <div class="project-icon">
+                    <i class="fas fa-brain"></i>
+                    <h3>AI模型展示</h3>
+                </div>
+                <div class="project-content">
+                    <h4 class="project-title">
+                        OpenRouter AI模型展示平台
+                        <span class="badge">热门</span>
+                    </h4>
+                    <p class="project-description">
+                        动态展示OpenRouter所有AI模型的详细信息，包含实时数据获取、智能分类、价格信息和技术规格。
+                    </p>
+                    <div class="project-links">
+                        <a href="ai-models.html" class="btn btn-primary">
+                            <i class="fas fa-play"></i> 立即体验
+                        </a>
+                        <a href="https://github.com/fremontzhang/beidou-ai-projects/blob/main/Labs/web-projects/openrouter-models-explorer.html" target="_blank" class="btn btn-secondary">
+                            <i class="fas fa-code"></i> 查看代码
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 火山云部署方案 -->
+            <div class="project-card">
+                <div class="project-icon">
+                    <i class="fas fa-cloud"></i>
+                    <h3>部署方案</h3>
+                </div>
+                <div class="project-content">
+                    <h4 class="project-title">
+                        火山云部署方案
+                        <span class="badge new">企业级</span>
+                    </h4>
+                    <p class="project-description">
+                        完整的云平台部署解决方案，包含一键部署脚本、Nginx配置、SSL证书和运维监控工具。
+                    </p>
+                    <div class="project-links">
+                        <a href="https://github.com/fremontzhang/beidou-ai-projects/blob/main/Labs/deployment/volcengine-deployment-plan.md" target="_blank" class="btn btn-primary">
+                            <i class="fas fa-book"></i> 查看文档
+                        </a>
+                        <a href="https://github.com/fremontzhang/beidou-ai-projects/blob/main/Labs/deployment/deploy-beidou-ai.sh" target="_blank" class="btn btn-secondary">
+                            <i class="fas fa-download"></i> 部署脚本
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GitHub同步工具 -->
+            <div class="project-card">
+                <div class="project-icon">
+                    <i class="fas fa-sync"></i>
+                    <h3>开发工具</h3>
+                </div>
+                <div class="project-content">
+                    <h4 class="project-title">GitHub同步工具</h4>
+                    <p class="project-description">
+                        Claude代码自动同步到GitHub的工具，支持一键同步、智能分类、自动提交和日志记录。
+                    </p>
+                    <div class="project-links">
+                        <a href="https://github.com/fremontzhang/beidou-ai-projects/blob/main/Labs/scripts/github-sync.sh" target="_blank" class="btn btn-primary">
+                            <i class="fas fa-code"></i> 查看脚本
+                        </a>
+                        <a href="https://github.com/fremontzhang/beidou-ai-projects/blob/main/Labs/docs/quick-start-guide.md" target="_blank" class="btn btn-secondary">
+                            <i class="fas fa-book"></i> 使用指南
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 运维管理 -->
+            <div class="project-card">
+                <div class="project-icon">
+                    <i class="fas fa-tools"></i>
+                    <h3>运维工具</h3>
+                </div>
+                <div class="project-content">
+                    <h4 class="project-title">服务器运维脚本</h4>
+                    <p class="project-description">
+                        完整的服务器监控和维护工具，包含性能监控、自动备份、日志管理和安全检查。
+                    </p>
+                    <div class="project-links">
+                        <a href="https://github.com/fremontzhang/beidou-ai-projects/blob/main/Labs/deployment/maintenance-scripts.sh" target="_blank" class="btn btn-primary">
+                            <i class="fas fa-terminal"></i> 查看脚本
+                        </a>
+                        <a href="https://github.com/fremontzhang/beidou-ai-projects/tree/main/Labs/deployment" target="_blank" class="btn btn-secondary">
+                            <i class="fas fa-folder"></i> 部署目录
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 项目文档 -->
+            <div class="project-card">
+                <div class="project-icon">
+                    <i class="fas fa-book"></i>
+                    <h3>项目文档</h3>
+                </div>
+                <div class="project-content">
+                    <h4 class="project-title">完整文档体系</h4>
+                    <p class="project-description">
+                        包含项目介绍、快速开始指南、部署文档、API说明等完整的文档体系。
+                    </p>
+                    <div class="project-links">
+                        <a href="https://github.com/fremontzhang/beidou-ai-projects/blob/main/Labs/README.md" target="_blank" class="btn btn-primary">
+                            <i class="fas fa-book-open"></i> Labs文档
+                        </a>
+                        <a href="https://github.com/fremontzhang/beidou-ai-projects/tree/main/Labs/docs" target="_blank" class="btn btn-secondary">
+                            <i class="fas fa-folder"></i> 文档目录
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 项目总结 -->
+            <div class="project-card">
+                <div class="project-icon">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>项目总结</h3>
+                </div>
+                <div class="project-content">
+                    <h4 class="project-title">项目总结报告</h4>
+                    <p class="project-description">
+                        完整的项目总结，包含技术栈、成本分析、部署方案和未来规划。
+                    </p>
+                    <div class="project-links">
+                        <a href="https://github.com/fremontzhang/beidou-ai-projects/blob/main/Labs/docs/project-summary.md" target="_blank" class="btn btn-primary">
+                            <i class="fas fa-file-alt"></i> 查看总结
+                        </a>
+                        <a href="https://github.com/fremontzhang/beidou-ai-projects" target="_blank" class="btn btn-secondary">
+                            <i class="fab fa-github"></i> GitHub主页
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>
+                <i class="fas fa-flask"></i> Beidou AI Labs - 探索AI模型展示与部署方案<br>
+                由 <a href="https://claude.ai" target="_blank">Claude Code</a> 生成和维护 |
+                <a href="https://github.com/fremontzhang/beidou-ai-projects" target="_blank">
+                    <i class="fab fa-github"></i> 源代码
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // 添加页面交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加卡片点击效果
+            const cards = document.querySelectorAll('.project-card');
+            cards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // 如果点击的是按钮，不触发卡片点击
+                    if (e.target.closest('.btn')) {
+                        return;
+                    }
+
+                    // 为卡片添加点击动画
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 200);
+                });
+            });
+
+            // 平滑滚动效果
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
